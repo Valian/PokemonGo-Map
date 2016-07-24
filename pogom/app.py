@@ -37,13 +37,14 @@ class Pogom(Flask):
         if args.fixed_location:
             display = "none"
 
-        return render_template('map.html',
-                               lat=config['ORIGINAL_LATITUDE'],
-                               lng=config['ORIGINAL_LONGITUDE'],
-                               gmaps_key=config['GMAPS_KEY'],
-                               lang=config['LOCALE'],
-                               is_fixed=display
-                               )
+        return render_template(
+            'map.html',
+            lat=config['ORIGINAL_LATITUDE'],
+            lng=config['ORIGINAL_LONGITUDE'],
+            gmaps_key=config['GMAPS_KEY'],
+            lang=config['LOCALE'],
+            is_fixed=display
+        )
 
     def raw_data(self):
         d = {}
@@ -54,7 +55,8 @@ class Pogom(Flask):
         if request.args.get('pokemon', 'true') == 'true':
             if request.args.get('ids'):
                 ids = [int(x) for x in request.args.get('ids').split(',')]
-                d['pokemons'] = Pokemon.get_active_by_id(ids, swLat, swLng, neLat, neLng)
+                d['pokemons'] = Pokemon.get_active_by_id(
+                    ids, swLat, swLng, neLat, neLng)
             else:
                 d['pokemons'] = Pokemon.get_active(swLat, swLng, neLat, neLng)
 
@@ -65,7 +67,8 @@ class Pogom(Flask):
             d['gyms'] = Gym.get_gyms(swLat, swLng, neLat, neLng)
 
         if request.args.get('scanned', 'true') == 'true':
-            d['scanned'] = ScannedLocation.get_recent(swLat, swLng, neLat, neLng)
+            d['scanned'] = ScannedLocation.get_recent(
+                swLat, swLng, neLat, neLng)
 
         return jsonify(d)
 
@@ -103,7 +106,7 @@ class Pogom(Flask):
         pokemon_list = []
         origin_point = LatLng.from_degrees(
             config['ORIGINAL_LATITUDE'], config['ORIGINAL_LONGITUDE'])
-        for pokemon in Pokemon.get_active():
+        for pokemon in Pokemon.get_active(None, None, None, None):
             pokemon_point = LatLng.from_degrees(
                 pokemon['latitude'], pokemon['longitude'])
             time_to_disappear = pokemon['disappear_time'] - datetime.utcnow()
